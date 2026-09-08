@@ -17,12 +17,8 @@ branch = "main"
 "Samuel Morris" = "uqsmor23@uq.edu.au"
 
 [phenotype_logic."Rough LPS"]
-loci = [ "OL*",]
-inactive_genes = [ "wzx","wzm", "wzt"]
-
-[phenotype_logic."Rough LPS"]
-loci = [ "OL25b",]
-inactive_genes = ["wbbL",]
+loci = [ "OL*","OL25b"]
+inactive_genes = [ "wzx","wzm", "wzt", "wbbL"]
 
 [phenotype_logic."Semi-Rough LPS"]
 loci = [ "OL*",]
