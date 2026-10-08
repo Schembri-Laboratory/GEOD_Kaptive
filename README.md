@@ -2,144 +2,68 @@
     <img align="right" src="https://github.com/klebgenomics/Kaptive/blob/master/docs/assets/logo.png?raw=true" alt="Kaptive" width="200">
 </a>
 
-# Decentralised _in silico_ serotyping databases
-*A template repo for curating [Kaptive](https://github.com/klebgenomics/Kaptive/) databases*
+# The Genomic _Escherichia coli_ O-antigen Database (GEOD)
+A database for accurate and comprehensive O-typing of _E. coli_ using [Kaptive](https://github.com/klebgenomics/Kaptive/).
 
-[![Streamlit App](https://img.shields.io/badge/Streamlit-%23FE4B4B.svg?logo=streamlit&logoColor=white)](https://kaptive-database-validator.streamlit.app/)
-[![Release Database](https://github.com/tomdstanton/kaptive-db-template/actions/workflows/release.yml/badge.svg)](https://github.com/tomdstanton/kaptive-db-template/actions/workflows/release.yml)
 
 ## How to use 👉
-Just click the green "Use this template" button in the top-right corner, create your repo and upload your database Genbank files!
+Run the following command to install the database
 
-## Metadata 📀
-All Kaptive databases now must be accompanied with a metadata [TOML file](https://toml.io/) with the **same name** as the corresponding Genbank file, 
-with a '.toml' extension in place of the '.gbk' extension.
-
-Below is an example of the _Klebsiella pneumoniae_ Species Complex K-locus database metadata:
-
-```toml
-name = "Klebsiella_pneumoniae_Species_Complex_K"
-keyword = "kpsc_k"
-genbank = "Klebsiella_pneumoniae_Species_Complex_K.gbk"
-organism = "Klebsiella pneumoniae Species Complex"
-taxon = 3390273
-antigen = "Capsular polysaccharide"
-pathway = "Wzx/Wzy-dependent"
-prefix = "K"
-version = "3.2.1"
-id_threshold = 82.5
-doi = ["TBD"]
-owner = "klebgenomics"
-repo = "KpSC_surface_antigen_loci"
-branch = "main"
-contact = { "Kelly Wyres" = "kaptive.typing@gmail.com" }
-
-[phenotype_logic]
-"Capsule null" = { loci = ["KL*"], inactive_genes = ['wza','wzb','wzc','wzx','wzy', 'wcaJ*', 'wbaP*'], priority = 100 }
-"K37" = { loci = ["KL22"], inactive_genes = ["atr12"] }
+```bash
+kaptive db add EC_Oag Schembri-Laboratory GEOD_Kaptive
 ```
+Example Usage
+```bash
+kaptive assembly ecol_o assemblies/*.fasta.gz > serotypes.tsv
+```
+## Typing and Nomenclature 📝
+### Cannonical O-antigens ✅
+All cannonical O-types (O1-O187) match perfectly to their  O-locus (OL). This also holds true for subtypes. For example, O1 maps to OL1, O25b maps to OL25b.
+### Putative O-antigens ❓
+For putatative O-antigens given a name by others, the original O-type designation has been retained. However, they have been mapped to OL types from OL188-OL216.
+
+The putative O-antigen loci found by Morris et al. (2026) have been assigned OL types OL217-OL264. Three of these (OL226, OL230 and OL251) have been assigned a corresponding O-type as they have previously been phenotypically confirmed.
+
+For a complete list see table S4 in the following publication.
+### High-Similarity Groups
+35 O-antigens belong to high-similarity groups (Gp1-16), where members of the group share >95% nucleotide identity [2].
+All but Gp11 are annotated in GEOD. Kaptive cannot reliably differentiate O-antigens in the same group, hence caution is advised in interpreting results for these O-types.
+
+|     Group    |     O-antigens                  |
+|--------------|---------------------------------|
+|     Gp1      |     O20, O137                   |
+|     Gp2      |     O28ac, O42                  |
+|     Gp3      |     O118, 151                   |
+|     Gp4      |     O90, O127                   |
+|     Gp5      |     O123, O186                  |
+|     Gp6      |     O46, O134                   |
+|     Gp7      |     O2, O50                     |
+|     Gp8      |     O107, O117                  |
+|     Gp9      |     O17, O44, O73, O77, O106    |
+|     Gp10     |     O13, O129, O135             |
+|     Gp12     |     O18ab, O18ac                |
+|     Gp13     |     O124, O164                  |
+|     Gp14     |     O62, O68                    |
+|     Gp15     |     O89, O101, O162             |
+|     Gp16     |     O169, O183                  |
+
 
 ### Phenotype Logic 🧠
-The [TOML format](https://toml.io/) is a simple, human-readable, easily-parsable format, which makes it perfect for metadata. For these reasons, it also made sense to define the
-phenotype logic here too! Whilst this is still a work-in-progress, here is how we're currently defining it:
 
-1. Each line represents a unique phenotype that can be applied to a serotyping call.
-1. All fields accept a wildcard ([`*`](https://docs.python.org/3/library/fnmatch.html)) for selecting multiple items.
-1. Loci are defined by the "loci" field - here you can choose the specific loci the logic applies to.
+| Phenotype      | Inactive Genes        |
+|----------------|-----------------------|
+| Rough LPS      | _wzx, wzm, wzt, wbbL_ |
+| Semi-Rough LPS | _wzy_                 |
 
-### App 💫
-We have created a simple [Streamlit app](https://kaptive-database-validator.streamlit.app/) to help you generate the metadata any database in your repo!
+More phenotype logic will be added in future updates.
 
-## Database Versioning & Release Workflow 🚀
-This repository uses a fully automated Continuous Integration / Continuous Deployment (CI/CD) pipeline to manage database versions.
 
-You do not need to manually edit version numbers or create Git tags. The pipeline relies on Semantic Versioning (SemVer) and reads your 
-commit messages to automatically calculate the correct version bump, update the corresponding .toml files, and generate 
-database-specific release tags.
 
-### How It Works: Conventional Commits ⚙️
-The automation script decides how to version a database based on the language used in your commit messages. 
-We follow the [Conventional Commits standard](https://www.conventionalcommits.org/en/v1.0.0/).
-
-When you commit changes to a database Genbank file, prefix your commit message with one of the following:
-
-#### Patch Bump 🔨
-`fix:` - Use this for correcting typos, fixing broken logic rules, or minor backwards-compatible bug fixes.
-
-- Example: `fix: correct wcaJ truncation rule in Klebsiella`
-- Result: `v3.2.1 ➡️ v3.2.2`
-
-#### Minor Bump 🛠️
-`feat:` - Use this when adding new features, such as adding a new locus, a new glycosidic linkage, or expanding the phenotype logic in a backwards-compatible way.
-
-- Example: `feat: add KL102 locus to Klebsiella_pneumoniae_K`
-- Result: `v3.2.1 ➡️ v3.3.0`
-
-#### Major Bump 🧰
-`feat!:` or `[major]` - Use this for breaking changes, such as overhauling the TOML schema, changing existing core 
-nomenclature, or deleting previously supported loci.
-
-- Example: `feat!: restructure TOML schema for phenotype logic`
-- Result: `v3.2.1 ➡️ v4.0.0`
-
-#### No Bump 🤷
-`chore:`, `docs:`, `style:` - Changes to `README`s, generic repository maintenance, or formatting will not trigger a version bump.
-
-### Day-to-Day Workflows 🖇️
-#### Updating an Existing Database ⬆️
-To update an existing database, simply make your changes to the .gbk files and commit them using the appropriate prefix.
-
-```bash
-# 1. Make changes to your files
-git add Klebsiella_pneumoniae_K.gbk Klebsiella_pneumoniae_K.toml
-
-# 2. Commit using a Conventional Commit message
-git commit -m "feat: add new Wzy-dependent linkage rules"
-
-# 3. Push to main
-git push origin main
-```
-
-**What happens next?** The GitHub Action will detect the changes to the Klebsiella files, parse the `feat:` prefix, 
-bump the minor version in `Klebsiella_pneumoniae_K.toml`, commit that TOML update back to the repository, 
-and create a scoped tag (e.g., `Klebsiella_pneumoniae_K-v3.3.0`).
-
-#### Adding a Completely New Database ➡️
-The pipeline is database-agnostic. To add a new database, you just need to drop the required files into the repository.
-
-1. Add your new GenBank file (e.g., `seudomonas_aeruginosa_O.gbk`).
-2. Add a starting TOML file (e.g., `Pseudomonas_aeruginosa_O.toml`) and manually set the initial version (e.g., `version = "1.0.0"`).
-3. Commit and push:
-
-```bash
-git add Pseudomonas_aeruginosa_O.*
-git commit -m "feat: initial release of Pseudomonas O-locus database"
-git push origin main
-```
-
-The pipeline will automatically discover the new `.toml` file, register the `feat:` bump (e.g., `v1.1.0`), and tag it.
-
-#### Updating Multiple Databases at Once ⬆️⬆️
-If you make a broad change that affects multiple databases (for example, fixing a shared logic rule across both Klebsiella_pneumoniae_K and Klebsiella_pneumoniae_O), simply commit them together:
-
-```bash
-git add *.logic
-git commit -m "fix: standardize capsule null logic across all databases"
-git push origin main**
-```
-
-The workflow will detect every database that was modified, bump their `.toml` versions independently, and generate a separate release tag for each one.
-
-### Important Rules ⚠️
- - Never manually edit the version = "..." string in the .toml files. The Python automation (tomlkit) handles this to ensure
-   strict alignment between the file contents and the Git tags.
- - Ensure file names match exactly. The base name of the TOML file must match the base name of the GenBank files
-   (e.g., `Database_Name.toml` pairs with `Database_Name.gbk`).
- - Pull before you work. Because the GitHub Action makes automated commits to update the TOML files, always
-   run `git pull` before starting new work to ensure your local branch has the latest version strings.
 
 ## References 📚
 [^1]: Stanton TD, Hetland MAK, Löhr IH, Holt KE, Wyres KL. Fast and
     Accurate in silico Antigen Typing with Kaptive 3.
     2025 _Microbial Genomics_ 11(6):001428.
     <https://doi.org/10.1099/mgen.0.001428>
+
+[^2]: Iguchi A, Iyoda S, Kikuchi T, et al. A complete view of the genetic diversity of the Escherichia coli O-antigen biosynthesis gene cluster. DNA Res. 2015;22(1):101-107. <doi:10.1093/dnares/dsu043>
